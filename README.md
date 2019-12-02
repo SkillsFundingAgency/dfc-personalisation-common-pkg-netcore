@@ -1,5 +1,6 @@
 # dfc-personalisation-common-pkg-netcore
 
-## Introduction
+A Nuget package for shared/re-usable non-ui code within the NCS Personalisation project. 
 
-An introduction to the project goes here!
+For shared/resuable UI code see [dfc-personalisation-common-ui-pkg-netcore](dfc-personalisation-common-ui-pkg-netcore).
+
