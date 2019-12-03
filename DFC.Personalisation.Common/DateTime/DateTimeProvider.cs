@@ -18,23 +18,15 @@ namespace DFC.Personalisation.Common.DateTime
 
         public static DateTimeProvider Current
         {
-            get { return DateTimeProvider._current; }
-            set
-            {
-                if (null == value)
-                {
-                    throw new ArgumentException("value");
-                }
-
-                DateTimeProvider._current = value;
-            }
+            get => _current;
+            set => _current = value ?? throw new ArgumentNullException("value");
         }
 
         public abstract System.DateTime UtcNow { get; }
 
         public static void ResetToDefault()
         {
-            DateTimeProvider._current = new DefaultDateTimeProvider();
+            _current = new DefaultDateTimeProvider();
         }
     }
 }
