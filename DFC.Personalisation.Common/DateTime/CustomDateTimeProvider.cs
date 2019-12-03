@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DFC.Personalisation.Common.DateTime
+﻿namespace DFC.Personalisation.Common.DateTime
 {
     public class CustomDateTimeProvider : DateTimeProvider, IDateTimeProvider
     {
@@ -12,9 +8,6 @@ namespace DFC.Personalisation.Common.DateTime
             _customDateTime = customDateTime;
         }
 
-        public override System.DateTime UtcNow
-        {
-            get { return _customDateTime.ToUniversalTime(); }
-        }
+        public override System.DateTime UtcNow => _customDateTime.ToUniversalTime();
     }
 }
