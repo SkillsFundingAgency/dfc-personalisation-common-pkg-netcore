@@ -9,14 +9,14 @@ namespace DFC.Personalisation.Common.DateTime
 
     public abstract class DateTimeProvider : IDateTimeProvider
     {
-        private static DateTimeProvider _current;
+        private static IDateTimeProvider _current;
 
         static DateTimeProvider()
         {
             ResetToDefault();
         }
 
-        public static DateTimeProvider Current
+        public static IDateTimeProvider Current
         {
             get => _current;
             set => _current = value ?? throw new ArgumentNullException("value");

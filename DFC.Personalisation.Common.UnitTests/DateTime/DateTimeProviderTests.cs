@@ -43,5 +43,22 @@ namespace DFC.Personalisation.Common.UnitTests.DateTime
                 dtpNow.Should().BeCloseTo(fakeSystemNow, toleranceMs);
             }
         }
+
+        [TestFixture]
+        public class Current
+        {
+            [TestCase(1)]
+            public void When_DateTimeProvider_Then_ReturnCurrentTime(int toleranceMs)
+            {
+                // Arrange
+                System.DateTime systemNow = System.DateTime.UtcNow;
+
+                // Act
+                IDateTimeProvider dtpNow = DateTimeProvider.Current;
+
+                // Assert
+                dtpNow.UtcNow.Should().BeCloseTo(systemNow, toleranceMs);
+            }
+        }
     }
 }
