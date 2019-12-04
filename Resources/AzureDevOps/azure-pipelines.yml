@@ -9,7 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.8.0
+    ref: refs/tags/v1.8.4
     endpoint: 'GitHub (ESFA)'
 
 stages:
@@ -28,5 +28,37 @@ stages:
         SolutionBaseName: $(SolutionBaseName)
         BuildPlatform: 'any cpu'
         BuildConfiguration: 'release'
-        PublishWebApp: 'false'
         TestSuffix: UnitTests
+    - task: NuGetCommand@2
+      displayName: 'NuGet pack'
+      inputs:
+        command: pack
+        packagesToPack: '**/*.nuspec'
+        packDestination: '$(build.artifactstagingdirectory)\DeploymentPackages\Nuget'
+        versioningScheme: byEnvVar
+        versionEnvVar: GitVersion.MajorMinorPatch
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: $(build.artifactstagingdirectory)\DeploymentPackages\Nuget
+        artifactName: $(SolutionBaseName).Nuget
+
+- stage: PublishPackage
+  displayName: Publish Package to NuGet
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: PublishNugetPackage
+    pool:
+      name: NCS - CI and CD
+      demands:
+      - msbuild
+      - visualstudio
+    steps:
+    - task: NuGetCommand@2
+      displayName: 'NuGet push'
+      inputs:
+        command: push
+        packagesToPush: '$(Pipeline.Workspace)\$(SolutionBaseName).Nuget\*.nupkg;!$(Pipeline.Workspace)\$(SolutionBaseName).Nuget\*.symbols.nupkg'
+        nuGetFeedType: external
+        publishFeedCredentials: 'DFC Nuget'
+
+
