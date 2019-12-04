@@ -9,7 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.8.4
+    ref: refs/heads/NCSD-2281-EnableGitVersionConfigFile
     endpoint: 'GitHub (ESFA)'
 
 stages:
