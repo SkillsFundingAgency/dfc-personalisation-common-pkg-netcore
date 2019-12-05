@@ -9,7 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.8.4
+    ref: refs/tags/v1.8.5
     endpoint: 'GitHub (ESFA)'
 
 stages:
@@ -52,13 +52,16 @@ stages:
       demands:
       - msbuild
       - visualstudio
-    steps:
-    - task: NuGetCommand@2
-      displayName: 'NuGet push'
-      inputs:
-        command: push
-        packagesToPush: '$(Pipeline.Workspace)\$(SolutionBaseName).Nuget\*.nupkg;!$(Pipeline.Workspace)\$(SolutionBaseName).Nuget\*.symbols.nupkg'
-        nuGetFeedType: external
-        publishFeedCredentials: 'DFC Nuget'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: NuGetCommand@2
+              displayName: 'NuGet push'
+              inputs:
+                command: push
+                packagesToPush: '$(Pipeline.Workspace)\$(SolutionBaseName).Nuget\*.nupkg;!$(Pipeline.Workspace)\$(SolutionBaseName).Nuget\*.symbols.nupkg'
+                nuGetFeedType: external
+                publishFeedCredentials: 'DFC Nuget'
 
 
