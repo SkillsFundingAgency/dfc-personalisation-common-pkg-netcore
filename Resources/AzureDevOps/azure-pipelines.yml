@@ -44,9 +44,10 @@ stages:
 
 - stage: PublishPackage
   displayName: Publish Package to NuGet
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
-  - job: PublishNugetPackage
+  - deployment: PublishNugetPackage
+    environment: PERSONALISATION_NUGET
     pool:
       name: NCS - CI and CD
       demands:
