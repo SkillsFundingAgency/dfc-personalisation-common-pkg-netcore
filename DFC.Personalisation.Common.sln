@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Personalisation.Common", "DFC.Personalisation.Common\DFC.Personalisation.Common.csproj", "{3B72388D-B782-4E58-952A-02BBEA1CE76E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Personalisation.Common.UnitTests", "DFC.Personalisation.Common.UnitTests\DFC.Personalisation.Common.UnitTests.csproj", "{3B062602-88A7-40BC-B389-2C25E0F85F0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3B72388D-B782-4E58-952A-02BBEA1CE76E} = {3B72388D-B782-4E58-952A-02BBEA1CE76E}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20D04182-2C31-4323-9E4E-E7D6CCCF3908}"
 	ProjectSection(SolutionItems) = preProject

@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -14,9 +15,13 @@ namespace DFC.Personalisation.Common.RestClient
     
     public interface IRestClient
     {
+        Task<TResponseObject> Get<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class;
         Task<TResponseObject> Get<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> Get(string apiPath);
         Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
+
+        Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content, string ocpApimSubscriptionKey)
+            where TResponseObject : class;
         Task<TRequestResponseObject> Post<TRequestResponseObject>(string apiPath,TRequestResponseObject requestObject) where TRequestResponseObject : class; 
         Task<TResponseObject> PostFormUrlEncodedContent<TResponseObject>(string apiPath,List<KeyValuePair<string, string>> formData) where TResponseObject : class;
         Task<TResponseObject> Put<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
@@ -79,7 +84,7 @@ namespace DFC.Personalisation.Common.RestClient
                 var response = await _httpClient.GetAsync(apiPath, HttpCompletionOption.ResponseContentRead);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = response.Content.ReadAsStringAsync().Result;
+                string jsonString = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrWhiteSpace(jsonString))
                 {
                     responseObject = JsonStringToObject<TResponseObject>(jsonString);
@@ -93,6 +98,12 @@ namespace DFC.Personalisation.Common.RestClient
             }
         }
 
+        public async Task<TResponseObject> Get<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class
+        {
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", ocpApimSubscriptionKey);
+            return await Get<TResponseObject>(apiPath);
+        }
+        
         public async Task<byte[]> Get(string apiPath)
         {
             byte[] responseData = default;
@@ -120,10 +131,11 @@ namespace DFC.Personalisation.Common.RestClient
             TResponseObject responseObject = default;
             try
             {
+                LastResponse = null;
                 var response = await _httpClient.PostAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = response.Content.ReadAsStringAsync().Result;
+                string jsonString = await response.Content.ReadAsStringAsync();
                 if(!string.IsNullOrWhiteSpace(jsonString))
                 {
                     responseObject = JsonStringToObject<TResponseObject>(jsonString);
@@ -135,6 +147,13 @@ namespace DFC.Personalisation.Common.RestClient
                 Exception e = ex.InnerException;
                 throw e;
             }
+        }
+
+        public async Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content,string ocpApimSubscriptionKey)
+            where TResponseObject : class
+        {
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", ocpApimSubscriptionKey);
+            return await Post<TResponseObject>(apiPath,content);
         }
 
         public async Task<TResponseObject> Post<TResponseObject>(string apiPath, TResponseObject requestObject) where TResponseObject : class
@@ -175,7 +194,7 @@ namespace DFC.Personalisation.Common.RestClient
                 HttpResponseMessage response = await _httpClient.PutAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = response.Content.ReadAsStringAsync().Result;
+                string jsonString = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrWhiteSpace(jsonString))
                 {
                     responseObject = JsonStringToObject<TResponseObject>(jsonString);
@@ -198,7 +217,7 @@ namespace DFC.Personalisation.Common.RestClient
                 HttpResponseMessage response = await _httpClient.DeleteAsync(apiPath);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = response.Content.ReadAsStringAsync().Result;
+                string jsonString = await response.Content.ReadAsStringAsync();
                 var responseObject = JsonStringToObject<TResponseObject>(jsonString);
                 return responseObject;
             }

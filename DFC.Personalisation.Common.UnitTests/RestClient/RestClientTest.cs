@@ -54,6 +54,75 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             }
 
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
+            public async Task When_MockServiceGetWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
+            {
+                // ARRANGE
+                var handlerMock = GetMockMessageHandler();
+
+                // use real http client with mocked handler here
+                var httpClient = new HttpClient(handlerMock.Object);
+                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+
+                // ACT
+                MockResult result = await subjectUnderTest.Get<MockResult>(url,"8ed8640b25004e26992beb9164d");
+
+                // ASSERT
+                result.Should().NotBeNull(); // this is fluent assertions here...
+                result.Id.Should().Be(1);
+
+                // also check the 'http' call was like we expected it
+                var expectedUri = new Uri(url);
+
+                handlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1), // we expected a single external request
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                            req.Method == HttpMethod.Get // we expected a GET request
+                            && req.RequestUri == expectedUri // to this uri
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+            }
+            
+            [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
+            public async Task When_MockServicePostWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
+            {
+                // ARRANGE
+                var handlerMock = GetMockMessageHandler();
+
+                // use real http client with mocked handler here
+                var values = new Dictionary<string, string>
+                {
+                    { "prop1", "Test prop1" },
+                    { "prop2", "Test prop2" }
+                };
+
+                var content = new FormUrlEncodedContent(values);
+                var httpClient = new HttpClient(handlerMock.Object);
+                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+
+                // ACT
+                MockResult result = await subjectUnderTest.Post<MockResult>(url,content,"8ed8640b25004e26992beb9164d");
+
+                // ASSERT
+                result.Should().NotBeNull(); // this is fluent assertions here...
+                result.Id.Should().Be(1);
+
+                // also check the 'http' call was like we expected it
+                var expectedUri = new Uri(url);
+
+                handlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1), // we expected a single external request
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                            req.Method == HttpMethod.Post // we expected a POST request
+                            && req.RequestUri == expectedUri // to this uri
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+            }
+            
+            [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_MockServiceGet_Then_ShouldReturnString(string url)
             {
                 // ARRANGE
@@ -111,6 +180,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
                 result.Id.Should().Be(1);
+                result.Value.Should().Be("1");
 
                 // also check the 'http' call was like we expected it
                 var expectedUri = new Uri(url);
@@ -119,7 +189,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                     "SendAsync",
                     Times.Exactly(1), // we expected a single external request
                     ItExpr.Is<HttpRequestMessage>(req =>
-                            req.Method == HttpMethod.Post // we expected a GET request
+                            req.Method == HttpMethod.Post // we expected a POST request
                             && req.RequestUri == expectedUri // to this uri
                     ),
                     ItExpr.IsAny<CancellationToken>()
@@ -155,7 +225,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                     "SendAsync",
                     Times.Exactly(1), // we expected a single external request
                     ItExpr.Is<HttpRequestMessage>(req =>
-                            req.Method == HttpMethod.Post // we expected a GET request
+                            req.Method == HttpMethod.Post // we expected a POST request
                             && req.RequestUri == expectedUri // to this uri
                     ),
                     ItExpr.IsAny<CancellationToken>()
@@ -192,7 +262,41 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                     "SendAsync",
                     Times.Exactly(1), // we expected a single external request
                     ItExpr.Is<HttpRequestMessage>(req =>
-                            req.Method == HttpMethod.Post // we expected a GET request
+                            req.Method == HttpMethod.Post // we expected a POST request
+                            && req.RequestUri == expectedUri // to this uri
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+            }
+            #endregion
+
+            #region ***** Test Put *****
+            [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
+            public async Task When_MockServicePutHttpContent_Then_ShouldReturnObject(string url)
+            {
+                // ARRANGE
+                var handlerMock = GetMockMessageHandler();
+
+                using StringContent content = new StringContent("{'Id':1,'Value':'1'}", System.Text.Encoding.UTF8, "application/json");
+
+                // use real http client with mocked handler here
+                var httpClient = new HttpClient(handlerMock.Object);
+                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+
+                // ACT
+                var result = await subjectUnderTest.Put<MockResult>(url,content);
+
+                // ASSERT
+                result.Should().NotBeNull(); // this is fluent assertions here...
+
+                // also check the 'http' call was like we expected it
+                var expectedUri = new Uri(url);
+
+                handlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1), // we expected a single external request
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                            req.Method == HttpMethod.Put // we expected a GET request
                             && req.RequestUri == expectedUri // to this uri
                     ),
                     ItExpr.IsAny<CancellationToken>()
@@ -215,9 +319,8 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                 var result = await subjectUnderTest.Delete<MockResult>(url);
 
                 // ASSERT
-                result.Should().NotBeNull(); 
-               
-
+                result.Should().NotBeNull();
+                
                 // also check the 'http' call was like we expected it
                 var expectedUri = new Uri(url);
 
@@ -271,10 +374,30 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             }
             #endregion 
           
+            #region ***** Test Response Class *****
+
+            [TestCase("https://jsonplaceholder.typicode.com/todos/error")]
+            public async Task When_MockApiCall_LastResponseNotNull(string url)
+            {
+                // ARRANGE
+                var handlerMock = GetMockMessageHandler();
+
+                // use real http client with mocked handler here
+                var httpClient = new HttpClient(handlerMock.Object);
+                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+
+                // ACT
+                MockResult result = await subjectUnderTest.Get<MockResult>(url);
+
+                // ASSERT
+                subjectUnderTest.LastResponse.Should().NotBe(null);
+            }
+            #endregion
+           
             #region ***** Test for Debugging only as they connect to real Api   *****
-              
+
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
-            [Ignore("Connects to external API for debug use only")]
+            [Ignore("DebugOnly")]
             public async Task When_ServiceGet_Then_ShouldReturnRow(string url)
             {
                 // ARRANGE
@@ -286,10 +409,14 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // ASSERT
                 result.Should().NotBeNull();
+                result.Id.Should().NotBe(0);
+                result.UserId.Should().NotBe(0);
+                result.Title.Should().NotBe("");
+                result.Completed.Should().BeFalse();
             }
-
+            
             [TestCase("https://jsonplaceholder.typicode.com/todos")]
-            [Ignore("Connects to external API for debug use only")]
+            [Ignore("DebugOnly")]
             public async Task When_ServiceGetMany_Then_ShouldReturnMultiplRows(string url)
             {
                 // ARRANGE
@@ -304,9 +431,9 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                     .And
                     .HaveCountGreaterOrEqualTo(2);
             }
-
+            
             [TestCase("https://dev.api.nationalcareersservice.org.uk/GetAllSkills/Execute/")]
-            [Ignore("Connects to external API for debug use only")]
+            [Ignore("DebugOnly")]
             public async Task When_ServiceGetWithHeader_Then_ShouldReturnRows(string url)
             {
                 // ARRANGE
@@ -315,24 +442,79 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                 var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
 
                 // ACT
-                var result = await subjectUnderTest.Get<Skills>(url);
+                var result = await subjectUnderTest.Get<SkillsList>(url);
                 
                 // ASSERT
-                 result.Should().NotBeNull();
+                result.Should().NotBeNull();
+                result.Skills.Length.Should().BeGreaterThan(0);
+                result.Skills[1].Uri.Should().NotBeEmpty();
+                result.Skills[1].SkillType.Should().NotBeEmpty();
+                result.Skills[1].Skill.Should().NotBeEmpty();
+            }
+
+            [TestCase("https://dev.api.nationalcareersservice.org.uk/GetAllSkills/Execute/")]
+            [Ignore("DebugOnly")]
+            public async Task When_ServiceGetWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
+            {
+                // ARRANGE
+                var httpClient = new HttpClient();
+                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+
+                // ACT
+                var result = await subjectUnderTest.Get<SkillsList>(url,"8ed8640b25004e26992beb9164d95139");
+                
+                // ASSERT
+                result.Should().NotBeNull();
+                
+            }
+            
+            [TestCase("https://jsonplaceholder.typicode.com/posts/1")]
+            [Ignore("DebugOnly")]
+            public async Task When_ServicePatch_Then_ResponseOK(string url)
+            {
+                // ARRANGE
+                var handlerMock = GetMockMessageHandler();
+
+                // use real http client with mocked handler here
+                var httpClient = new HttpClient(handlerMock.Object);
+                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+
+                var testList = new List<KeyValuePair<string, string>>{
+                    new KeyValuePair<string, string>("title", "foo")
+                };
+
+                // ACT
+                var result = await  subjectUnderTest.Patch<MockResult>(url,testList);
+
+                // ASSERT
+                result.Should().NotBe(null);
+                
+                // also check the 'http' call was like we expected it
+                var expectedUri = new Uri(url);
+
+                handlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1), // we expected a single external request
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                            req.Method == HttpMethod.Patch // we expected a GET request
+                            && req.RequestUri == expectedUri // to this uri
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
             }
             
             #endregion
-            
+
         }
 
         #region ***** Classes used by tests *****
 
-        public class SkillsList
+        class SkillsList
         {
             public STSkill[] Skills { get; set; }
         }
 
-        public class STSkill
+        class STSkill
         {
             public string Uri { get; set; }
             public string Skill { get; set; }
@@ -340,8 +522,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             public string[] AlternativeLabels { get; set; }
         }
 
-
-        public class ToDo
+        class ToDo
         {
             public int UserId { get; set; }
             public int Id { get; set; }
@@ -349,8 +530,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             public bool Completed { get; set; }
         }
 
-
-        public class MockResult
+        class MockResult
         {
             public int Id { get; set; }
             public string Value { get; set; }
@@ -358,8 +538,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
         #endregion
 
-
-        private static Mock<HttpMessageHandler> GetMockMessageHandler()
+        public static Mock<HttpMessageHandler> GetMockMessageHandler()
         {
             var handlerMock =  new Mock<HttpMessageHandler>(MockBehavior.Loose);
             handlerMock
@@ -380,6 +559,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                 .Verifiable();
             return handlerMock;
         }
+        
     
 
     }
