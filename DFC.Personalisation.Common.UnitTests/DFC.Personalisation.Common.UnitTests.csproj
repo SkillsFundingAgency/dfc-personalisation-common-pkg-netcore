@@ -12,9 +12,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Net\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\DFC.Personalisation.Common\DFC.Personalisation.Common.csproj" />
   </ItemGroup>
 </Project>

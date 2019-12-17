@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace DFC.Personalisation.Common.RestClient
+namespace DFC.Personalisation.Common.Net.RestClient
 {
     
     public interface IRestClient
@@ -43,6 +43,9 @@ namespace DFC.Personalisation.Common.RestClient
                 Content = responseMessage.Content?.ReadAsStringAsync().Result;
             }
         }
+        private const string _mediaTypeJson = "application/json";
+        private const string _mediaTypeJsonPatch = "application/json-patch+json";
+        private const string _ocpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         private readonly HttpClient _httpClient;
         private APIResponse _lastResponse;
         public APIResponse LastResponse
@@ -54,7 +57,7 @@ namespace DFC.Personalisation.Common.RestClient
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+                new MediaTypeWithQualityHeaderValue(_mediaTypeJson));
         }
 
         #region Private Methods
@@ -100,7 +103,7 @@ namespace DFC.Personalisation.Common.RestClient
 
         public async Task<TResponseObject> Get<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class
         {
-            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
             return await Get<TResponseObject>(apiPath);
         }
         
@@ -114,7 +117,7 @@ namespace DFC.Personalisation.Common.RestClient
                 LastResponse = new APIResponse(response);
                 if (response.IsSuccessStatusCode)
                 {
-                    responseData = response.Content.ReadAsByteArrayAsync().Result;
+                    responseData = await response.Content.ReadAsByteArrayAsync();
                 }
                 return responseData;
             }
@@ -152,7 +155,7 @@ namespace DFC.Personalisation.Common.RestClient
         public async Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content,string ocpApimSubscriptionKey)
             where TResponseObject : class
         {
-            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
             return await Post<TResponseObject>(apiPath,content);
         }
 
@@ -161,7 +164,7 @@ namespace DFC.Personalisation.Common.RestClient
             try
             {
                 string jsonString = ObjectToJsonString(requestObject);
-                using StringContent content = new StringContent(jsonString, System.Text.Encoding.UTF8, "application/json");
+                using StringContent content = new StringContent(jsonString, System.Text.Encoding.UTF8, _mediaTypeJson);
                 return  await Post<TResponseObject>(apiPath, content);
             }
             catch (AggregateException ex)
@@ -237,7 +240,7 @@ namespace DFC.Personalisation.Common.RestClient
             {
                 LastResponse = null;
                 var jsonRequest = JsonConvert.SerializeObject(requestBody);
-                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
+                var content = new StringContent(jsonRequest, Encoding.UTF8, _mediaTypeJsonPatch);
                 HttpResponseMessage response = await _httpClient.PatchAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();

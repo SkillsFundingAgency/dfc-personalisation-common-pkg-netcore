@@ -6,13 +6,13 @@ using System.Net.Http;
 
 using System.Threading;
 using System.Threading.Tasks;
-using DFC.Personalisation.Common.RestClient;
+using DFC.Personalisation.Common.Net.RestClient;
 using FluentAssertions;
 using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 
-namespace DFC.Personalisation.Common.UnitTests.RestClient
+namespace DFC.Personalisation.Common.UnitTests.Net.RestClient
 {
 
     [TestFixture]
@@ -30,7 +30,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 MockResult result = await subjectUnderTest.Get<MockResult>(url);
@@ -61,7 +61,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 MockResult result = await subjectUnderTest.Get<MockResult>(url,"8ed8640b25004e26992beb9164d");
@@ -84,44 +84,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                 );
             }
             
-            [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
-            public async Task When_MockServicePostWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
-            {
-                // ARRANGE
-                var handlerMock = GetMockMessageHandler();
-
-                // use real http client with mocked handler here
-                var values = new Dictionary<string, string>
-                {
-                    { "prop1", "Test prop1" },
-                    { "prop2", "Test prop2" }
-                };
-
-                var content = new FormUrlEncodedContent(values);
-                var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
-
-                // ACT
-                MockResult result = await subjectUnderTest.Post<MockResult>(url,content,"8ed8640b25004e26992beb9164d");
-
-                // ASSERT
-                result.Should().NotBeNull(); // this is fluent assertions here...
-                result.Id.Should().Be(1);
-
-                // also check the 'http' call was like we expected it
-                var expectedUri = new Uri(url);
-
-                handlerMock.Protected().Verify(
-                    "SendAsync",
-                    Times.Exactly(1), // we expected a single external request
-                    ItExpr.Is<HttpRequestMessage>(req =>
-                            req.Method == HttpMethod.Post // we expected a POST request
-                            && req.RequestUri == expectedUri // to this uri
-                    ),
-                    ItExpr.IsAny<CancellationToken>()
-                );
-            }
-            
+           
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_MockServiceGet_Then_ShouldReturnString(string url)
             {
@@ -130,7 +93,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Get(url);
@@ -145,7 +108,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 Exception ex = Assert.ThrowsAsync<HttpRequestException>(() =>  subjectUnderTest.Get<ToDo>(url));
@@ -172,7 +135,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 MockResult result = await subjectUnderTest.Post<MockResult>(url,content);
@@ -181,6 +144,44 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                 result.Should().NotBeNull(); // this is fluent assertions here...
                 result.Id.Should().Be(1);
                 result.Value.Should().Be("1");
+
+                // also check the 'http' call was like we expected it
+                var expectedUri = new Uri(url);
+
+                handlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1), // we expected a single external request
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                            req.Method == HttpMethod.Post // we expected a POST request
+                            && req.RequestUri == expectedUri // to this uri
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+            }
+
+            [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
+            public async Task When_MockServicePostWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
+            {
+                // ARRANGE
+                var handlerMock = GetMockMessageHandler();
+
+                // use real http client with mocked handler here
+                var values = new Dictionary<string, string>
+                {
+                    { "prop1", "Test prop1" },
+                    { "prop2", "Test prop2" }
+                };
+
+                var content = new FormUrlEncodedContent(values);
+                var httpClient = new HttpClient(handlerMock.Object);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
+
+                // ACT
+                MockResult result = await subjectUnderTest.Post<MockResult>(url,content,"8ed8640b25004e26992beb9164d");
+
+                // ASSERT
+                result.Should().NotBeNull(); // this is fluent assertions here...
+                result.Id.Should().Be(1);
 
                 // also check the 'http' call was like we expected it
                 var expectedUri = new Uri(url);
@@ -210,7 +211,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Post(url,values);
@@ -247,7 +248,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.PostFormUrlEncodedContent<MockResult>(url,testList);
@@ -281,7 +282,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Put<MockResult>(url,content);
@@ -313,7 +314,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Delete<MockResult>(url);
@@ -345,7 +346,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 var testList = new List<KeyValuePair<string, string>>{
                     new KeyValuePair<string, string>("Prop1", "1"),
@@ -384,7 +385,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 MockResult result = await subjectUnderTest.Get<MockResult>(url);
@@ -402,7 +403,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Get<ToDo>(url);
@@ -421,7 +422,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Get<IList<ToDo>>(url);
@@ -439,7 +440,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
                 // ARRANGE
                 var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "8ed8640b25004e26992beb9164d95139");
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Get<SkillsList>(url);
@@ -458,7 +459,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 var result = await subjectUnderTest.Get<SkillsList>(url,"8ed8640b25004e26992beb9164d95139");
@@ -477,7 +478,7 @@ namespace DFC.Personalisation.Common.UnitTests.RestClient
 
                 // use real http client with mocked handler here
                 var httpClient = new HttpClient(handlerMock.Object);
-                var subjectUnderTest = new Common.RestClient.RestClient(httpClient);
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 var testList = new List<KeyValuePair<string, string>>{
                     new KeyValuePair<string, string>("title", "foo")
