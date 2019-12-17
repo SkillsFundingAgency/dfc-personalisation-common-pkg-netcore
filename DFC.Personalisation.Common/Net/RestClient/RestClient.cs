@@ -8,6 +8,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
+using Moq.Protected;
 using Newtonsoft.Json.Linq;
 
 namespace DFC.Personalisation.Common.Net.RestClient
@@ -260,6 +262,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
 
            
         }
+        
         
         #endregion Public Methods
 
