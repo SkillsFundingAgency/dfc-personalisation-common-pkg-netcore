@@ -6,11 +6,16 @@ MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Personalisation.Common", "DFC.Personalisation.Common\DFC.Personalisation.Common.csproj", "{3B72388D-B782-4E58-952A-02BBEA1CE76E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Personalisation.Common.UnitTests", "DFC.Personalisation.Common.UnitTests\DFC.Personalisation.Common.UnitTests.csproj", "{3B062602-88A7-40BC-B389-2C25E0F85F0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3B72388D-B782-4E58-952A-02BBEA1CE76E} = {3B72388D-B782-4E58-952A-02BBEA1CE76E}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20D04182-2C31-4323-9E4E-E7D6CCCF3908}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.Personalisation.Common.IntegrationTests", "DFC.Personalisation.Common.IntegrationTests\DFC.Personalisation.Common.IntegrationTests.csproj", "{D0791983-E550-4134-917E-6D98E5289042}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +51,18 @@ Global
 		{3B062602-88A7-40BC-B389-2C25E0F85F0C}.Release|x64.Build.0 = Release|Any CPU
 		{3B062602-88A7-40BC-B389-2C25E0F85F0C}.Release|x86.ActiveCfg = Release|Any CPU
 		{3B062602-88A7-40BC-B389-2C25E0F85F0C}.Release|x86.Build.0 = Release|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Debug|x64.Build.0 = Debug|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Debug|x86.Build.0 = Debug|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Release|x64.ActiveCfg = Release|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Release|x64.Build.0 = Release|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Release|x86.ActiveCfg = Release|Any CPU
+		{D0791983-E550-4134-917E-6D98E5289042}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
