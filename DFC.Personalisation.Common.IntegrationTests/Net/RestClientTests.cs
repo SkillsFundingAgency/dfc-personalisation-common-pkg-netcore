@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using DFC.Personalisation.Common.Net.RestClient;
-using System.Threading;
 using System.Threading.Tasks;
-using DFC.Personalisation.Common;
 using FluentAssertions;
-using Moq;
-using Moq.Protected;
 using NUnit.Framework;
 
 namespace DFC.Personalisation.Common.IntegrationTests.Net
@@ -59,7 +51,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("_ocpApimSubscriptionKeyHeader", "8ed8640b25004e26992beb9164d95139");
+                httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, "8ed8640b25004e26992beb9164d95139");
                 var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT

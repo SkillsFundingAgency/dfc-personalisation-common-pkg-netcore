@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-
 using System.Threading;
 using System.Threading.Tasks;
-using DFC.Personalisation.Common.Net.RestClient;
 using FluentAssertions;
 using Moq;
 using Moq.Protected;
@@ -102,20 +99,22 @@ namespace DFC.Personalisation.Common.UnitTests.Net.RestClient
                 result.Should().NotBeNull(); 
                 
             }
-
+            
             [TestCase("https://jsonplaceholder.typicode.com/todos/error")]
-            public async Task When_IncorrectUrl_Then_ShouldReturn404(string url)
+            public void When_IncorrectUrl_Then_ShouldReturn404(string url)
             {
+                
                 // ARRANGE
                 var httpClient = new HttpClient();
                 var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
                 Exception ex = Assert.ThrowsAsync<HttpRequestException>(() =>  subjectUnderTest.Get<MockResult>(url));
-
+                
                 // ASSERT
                 StringAssert.Contains("404", ex.Message);
             }
+            
             #endregion
 
             #region ***** Test Post *****
@@ -426,7 +425,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net.RestClient
                 var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
-                MockResult result = await subjectUnderTest.Get<MockResult>(url);
+                await subjectUnderTest.Get<MockResult>(url);
 
                 // ASSERT
                 subjectUnderTest.LastResponse.Should().NotBe(null);
