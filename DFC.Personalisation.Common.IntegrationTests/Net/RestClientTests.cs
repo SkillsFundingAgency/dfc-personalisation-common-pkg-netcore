@@ -10,7 +10,8 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
     {
 
           #region 
-          
+            private const string _ocpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
+
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_ServiceGet_Then_ShouldReturnRow(string url)
             {
@@ -50,7 +51,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("_ocpApimSubscriptionKeyHeader", "8ed8640b25004e26992beb9164d95139");
+                httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, "8ed8640b25004e26992beb9164d95139");
                 var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
