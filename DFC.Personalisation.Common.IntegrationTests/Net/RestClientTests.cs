@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using DFC.Personalisation.Common.Net.RestClient;
-using System.Threading;
 using System.Threading.Tasks;
-using DFC.Personalisation.Common;
 using FluentAssertions;
-using Moq;
-using Moq.Protected;
 using NUnit.Framework;
 
 namespace DFC.Personalisation.Common.IntegrationTests.Net
@@ -18,8 +10,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
     {
 
           #region 
-            private const string _ocpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
-
+          
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_ServiceGet_Then_ShouldReturnRow(string url)
             {
