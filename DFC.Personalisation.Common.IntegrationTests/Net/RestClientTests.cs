@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using DFC.Personalisation.Common.Net.RestClient;
-using System.Threading;
 using System.Threading.Tasks;
-using DFC.Personalisation.Common;
 using FluentAssertions;
-using Moq;
-using Moq.Protected;
 using NUnit.Framework;
 
 namespace DFC.Personalisation.Common.IntegrationTests.Net
@@ -17,7 +9,8 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
     public class RestClientTests
     {
 
-          #region ***** Test for Debugging only as they connect to real Api   *****
+          #region 
+            private const string _ocpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
 
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_ServiceGet_Then_ShouldReturnRow(string url)
@@ -58,7 +51,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "8ed8640b25004e26992beb9164d95139");
+                httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, "8ed8640b25004e26992beb9164d95139");
                 var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
