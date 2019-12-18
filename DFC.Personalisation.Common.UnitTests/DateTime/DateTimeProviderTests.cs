@@ -12,7 +12,7 @@ namespace DFC.Personalisation.Common.UnitTests.DateTime
         [TestFixture]
         public class UtcNow
         {
-            [TestCase(1)]
+            [TestCase(100)]
             public void When_DefaultDateTimeProvider_Then_ReturnCurrentTime(int toleranceMs)
             {
                 // Arrange
@@ -27,7 +27,7 @@ namespace DFC.Personalisation.Common.UnitTests.DateTime
                 dtpNow.Should().BeCloseTo(systemNow, toleranceMs);
             }
 
-            [TestCase(1)]
+            [TestCase(100)]
             public void When_MockedDateTimeProvider_Then_ReturnMockTime(int toleranceMs)
             {
                 // Arrange
