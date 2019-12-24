@@ -114,6 +114,21 @@ namespace DFC.Personalisation.Common.UnitTests.Net.RestClient
                 // ASSERT
                 StringAssert.Contains("404", ex.Message);
             }
+
+            [TestCase("https://jsonplaceholder.typicode.com/todos/error")]
+            public void When_MissingocpApimSubscriptionKey_Then_ShouldReturnException(string url)
+            {
+                
+                // ARRANGE
+                var httpClient = new HttpClient();
+                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
+
+                // ACT
+                Exception ex = Assert.ThrowsAsync<ArgumentNullException>(() =>  subjectUnderTest.Get<MockResult>(url,""));
+                
+                // ASSERT
+                StringAssert.Contains("Ocp-Apim-Subscription-Key", ex.Message);
+            }
             
             #endregion
 

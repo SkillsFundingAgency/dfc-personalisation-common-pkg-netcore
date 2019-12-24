@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
 namespace DFC.Personalisation.Common.IntegrationTests.Net
@@ -11,6 +12,18 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
 
           #region 
             private const string _ocpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
+            private string _ApiKey;
+            [OneTimeSetUp]
+            public void Init()
+            {
+                var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+                _ApiKey = config.GetSection("ServiceTaxonomySettings").GetSection("ApiKey").Value;  
+           
+
+            }
+
 
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_ServiceGet_Then_ShouldReturnRow(string url)
@@ -51,7 +64,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             {
                 // ARRANGE
                 var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, "8ed8640b25004e26992beb9164d95139");
+                httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, _ApiKey);
                 var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
@@ -73,7 +86,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
                 var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
 
                 // ACT
-                var result = await subjectUnderTest.Get<SkillsList>(url,"8ed8640b25004e26992beb9164d95139");
+                var result = await subjectUnderTest.Get<SkillsList>(url,_ApiKey);
                 
                 // ASSERT
                 result.Should().NotBeNull();

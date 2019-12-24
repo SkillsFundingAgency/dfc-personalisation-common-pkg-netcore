@@ -105,6 +105,8 @@ namespace DFC.Personalisation.Common.Net.RestClient
 
         public async Task<TResponseObject> Get<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class
         {
+            if (string.IsNullOrWhiteSpace((ocpApimSubscriptionKey)))
+                throw new ArgumentNullException(nameof(ocpApimSubscriptionKey), "Please provide Ocp-Apim-Subscription-Key");
             _httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
             return await Get<TResponseObject>(apiPath);
         }
