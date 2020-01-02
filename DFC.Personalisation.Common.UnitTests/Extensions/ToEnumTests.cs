@@ -16,7 +16,7 @@ namespace DFC.Personalisation.Common.UnitTests.Extensions
         {
             string incorrect = "sdfdfsfs";
             var result = incorrect.ToEnum(defaultValue: TestEnums.Undefined);
-            result.Should().BeEquivalentTo(TestEnums.Undefined);
+            result.Should().Be(TestEnums.Undefined);
         }
 
         [Test]
@@ -24,7 +24,7 @@ namespace DFC.Personalisation.Common.UnitTests.Extensions
         {
             var blank = string.Empty;
             var result = blank.ToEnum(defaultValue: TestEnums.Undefined);
-            result.Should().BeEquivalentTo(TestEnums.Undefined);
+            result.Should().Be(TestEnums.Undefined);
         }
 
         [Test]
@@ -32,14 +32,14 @@ namespace DFC.Personalisation.Common.UnitTests.Extensions
         {
             var validTest1 = "Test1";
             var result = validTest1.ToEnum(defaultValue: TestEnums.Undefined);
-            result.Should().BeEquivalentTo(TestEnums.Test1);
+            result.Should().Be(TestEnums.Test1);
         }
         [Test]
         public void If_Valid_CaseInsensitive_Value_Return_Correct_Value()
         {
             var validTest1 = "TeSt1";
             var result = validTest1.ToEnum(defaultValue: TestEnums.Undefined);
-            result.Should().BeEquivalentTo(TestEnums.Test1);
+            result.Should().Be(TestEnums.Test1);
         }
     }
 }
