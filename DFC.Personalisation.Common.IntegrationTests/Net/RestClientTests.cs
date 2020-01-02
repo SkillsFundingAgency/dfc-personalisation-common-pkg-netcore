@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Personalisation.Common.Net.RestClient;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
@@ -12,28 +13,24 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
 
           #region 
             private const string _ocpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
-            private string _ApiKey;
+            private string _apiKey;
+            private RestClient _subjectUnderTest;
             [OneTimeSetUp]
             public void Init()
             {
                 var config = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json")
                     .Build();
-                _ApiKey = config.GetSection("ServiceTaxonomySettings").GetSection("ApiKey").Value;  
-           
-
+                _apiKey = config.GetSection("ServiceTaxonomySettings").GetSection("ApiKey").Value;  
+                _subjectUnderTest = new RestClient();
             }
 
 
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_ServiceGet_Then_ShouldReturnRow(string url)
             {
-                // ARRANGE
-                var httpClient = new HttpClient();
-                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
-
                 // ACT
-                var result = await subjectUnderTest.Get<ToDo>(url);
+                var result = await _subjectUnderTest.Get<ToDo>(url);
 
                 // ASSERT
                 result.Should().NotBeNull();
@@ -44,14 +41,10 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             }
             
             [TestCase("https://jsonplaceholder.typicode.com/todos")]
-            public async Task When_ServiceGetMany_Then_ShouldReturnMultiplRows(string url)
+            public async Task When_ServiceGetMany_Then_ShouldReturnMultipleRows(string url)
             {
-                // ARRANGE
-                var httpClient = new HttpClient();
-                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
-
                 // ACT
-                var result = await subjectUnderTest.Get<IList<ToDo>>(url);
+                var result = await _subjectUnderTest.Get<IList<ToDo>>(url);
 
                 // ASSERT
                 result.Should().NotBeNull()
@@ -62,13 +55,10 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             [TestCase("https://dev.api.nationalcareersservice.org.uk/GetAllSkills/Execute/")]
             public async Task When_ServiceGetWithHeader_Then_ShouldReturnRows(string url)
             {
-                // ARRANGE
-                var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, _ApiKey);
-                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
-
+                _subjectUnderTest.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, _apiKey);
+             
                 // ACT
-                var result = await subjectUnderTest.Get<SkillsList>(url);
+                var result = await _subjectUnderTest.Get<SkillsList>(url);
                 
                 // ASSERT
                 result.Should().NotBeNull();
@@ -81,20 +71,13 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             [TestCase("https://dev.api.nationalcareersservice.org.uk/GetAllSkills/Execute/")]
             public async Task When_ServiceGetWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
             {
-                // ARRANGE
-                var httpClient = new HttpClient();
-                var subjectUnderTest = new Common.Net.RestClient.RestClient(httpClient);
-
                 // ACT
-                var result = await subjectUnderTest.Get<SkillsList>(url,_ApiKey);
+                var result = await _subjectUnderTest.Get<SkillsList>(url,_apiKey);
                 
                 // ASSERT
                 result.Should().NotBeNull();
                 
             }
-
-          
-
 
             #endregion
     }

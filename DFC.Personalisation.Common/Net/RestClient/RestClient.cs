@@ -1,15 +1,12 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Moq;
-using Moq.Protected;
 using Newtonsoft.Json.Linq;
 
 namespace DFC.Personalisation.Common.Net.RestClient
@@ -30,7 +27,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         Task<TResponseObject> Patch<TResponseObject>(string apiPath,List<KeyValuePair<string, string>> requestBody) where TResponseObject : class;
         Task<TResponseObject> Delete<TResponseObject>(string apiPath) where TResponseObject : class;
     }
-    public class RestClient :IRestClient
+    public class RestClient :HttpClient, IRestClient
     {
         public class APIResponse
         {
@@ -45,38 +42,41 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 Content = responseMessage.Content?.ReadAsStringAsync().Result;
             }
         }
-        private const string _mediaTypeJson = "application/json";
-        private const string _mediaTypeJsonPatch = "application/json-patch+json";
-        private const string _ocpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
-        private readonly HttpClient _httpClient;
-        private APIResponse _lastResponse;
-        public APIResponse LastResponse
+        
+        private const string MediaTypeJsonPatch = "application/json-patch+json";
+        private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
+        
+        public APIResponse LastResponse { get; internal set; }
+        public RestClient(): base()
         {
-            get { return _lastResponse; }
-            internal set { _lastResponse = value; }
+            InitialiseDefaultRequestHeaders();
         }
-        public RestClient(HttpClient httpClient)
+        public RestClient(HttpMessageHandler handler)
+            : base(handler)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(_mediaTypeJson));
+            InitialiseDefaultRequestHeaders();
+        }
+        public void InitialiseDefaultRequestHeaders()
+        {
+            DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         }
 
         #region Private Methods
+        
         private static T JsonStringToObject<T>(string json) where T:class
         {
-            JToken token = JToken.Parse(json);
-            T obj = token.ToObject<T>();
+            var token = JToken.Parse(json);
+            var obj = token.ToObject<T>();
             return obj;
         }
-
         private static string ObjectToJsonString<T>(T obj) where T:class
         {
-            JToken token = JToken.FromObject(obj);
-            string jsonString = token.ToString();
+            var token = JToken.FromObject(obj);
+            var jsonString = token.ToString();
             return jsonString;
         }
-
+        
         #endregion Private Methods
         
         #region Public Methods
@@ -86,10 +86,10 @@ namespace DFC.Personalisation.Common.Net.RestClient
             try
             {
                 LastResponse = null;
-                var response = await _httpClient.GetAsync(apiPath, HttpCompletionOption.ResponseContentRead);
+                var response = await GetAsync(apiPath, HttpCompletionOption.ResponseContentRead);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = await response.Content.ReadAsStringAsync();
+                var jsonString = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrWhiteSpace(jsonString))
                 {
                     responseObject = JsonStringToObject<TResponseObject>(jsonString);
@@ -98,16 +98,15 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
         }
 
         public async Task<TResponseObject> Get<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class
         {
-            if (string.IsNullOrWhiteSpace((ocpApimSubscriptionKey)))
+            if (string.IsNullOrWhiteSpace(ocpApimSubscriptionKey))
                 throw new ArgumentNullException(nameof(ocpApimSubscriptionKey), "Please provide Ocp-Apim-Subscription-Key");
-            _httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
+            DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
             return await Get<TResponseObject>(apiPath);
         }
         
@@ -117,7 +116,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
             try
             {
                 LastResponse = null;
-                var response = await _httpClient.GetAsync(apiPath, HttpCompletionOption.ResponseContentRead);
+                var response = await GetAsync(apiPath, HttpCompletionOption.ResponseContentRead);
                 LastResponse = new APIResponse(response);
                 if (response.IsSuccessStatusCode)
                 {
@@ -127,22 +126,20 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
         }
 
-        
         public async Task<TResponseObject>  Post<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class
         {
             TResponseObject responseObject = default;
             try
             {
                 LastResponse = null;
-                var response = await _httpClient.PostAsync(apiPath, content);
+                var response = await PostAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = await response.Content.ReadAsStringAsync();
+                var jsonString = await response.Content.ReadAsStringAsync();
                 if(!string.IsNullOrWhiteSpace(jsonString))
                 {
                     responseObject = JsonStringToObject<TResponseObject>(jsonString);
@@ -151,15 +148,14 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
         }
 
         public async Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content,string ocpApimSubscriptionKey)
             where TResponseObject : class
         {
-            _httpClient.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
+            DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
             return await Post<TResponseObject>(apiPath,content);
         }
 
@@ -167,14 +163,13 @@ namespace DFC.Personalisation.Common.Net.RestClient
         {
             try
             {
-                string jsonString = ObjectToJsonString(requestObject);
-                using StringContent content = new StringContent(jsonString, System.Text.Encoding.UTF8, _mediaTypeJson);
+                var jsonString = ObjectToJsonString(requestObject);
+                using var content = new StringContent(jsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
                 return  await Post<TResponseObject>(apiPath, content);
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
         }
 
@@ -187,8 +182,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
         }
 
@@ -198,10 +192,10 @@ namespace DFC.Personalisation.Common.Net.RestClient
             try
             {
                 LastResponse = null;
-                HttpResponseMessage response = await _httpClient.PutAsync(apiPath, content);
+                var response = await PutAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = await response.Content.ReadAsStringAsync();
+                var jsonString = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrWhiteSpace(jsonString))
                 {
                     responseObject = JsonStringToObject<TResponseObject>(jsonString);
@@ -211,8 +205,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
         }
 
@@ -221,17 +214,16 @@ namespace DFC.Personalisation.Common.Net.RestClient
             try
             {
                 LastResponse = null;
-                HttpResponseMessage response = await _httpClient.DeleteAsync(apiPath);
+                var response = await DeleteAsync(apiPath);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = await response.Content.ReadAsStringAsync();
+                var jsonString = await response.Content.ReadAsStringAsync();
                 var responseObject = JsonStringToObject<TResponseObject>(jsonString);
                 return responseObject;
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
         }
 
@@ -244,11 +236,11 @@ namespace DFC.Personalisation.Common.Net.RestClient
             {
                 LastResponse = null;
                 var jsonRequest = JsonConvert.SerializeObject(requestBody);
-                var content = new StringContent(jsonRequest, Encoding.UTF8, _mediaTypeJsonPatch);
-                HttpResponseMessage response = await _httpClient.PatchAsync(apiPath, content);
+                var content = new StringContent(jsonRequest, Encoding.UTF8, MediaTypeJsonPatch);
+                var response = await PatchAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
-                string jsonString = response.Content.ReadAsStringAsync().Result;
+                var jsonString = response.Content.ReadAsStringAsync().Result;
                 if(!string.IsNullOrWhiteSpace(jsonString))
                 {
                     responseObject = JsonStringToObject<TResponseObject>(jsonString);
@@ -257,15 +249,11 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
             catch (AggregateException ex)
             {
-                Exception e = ex.InnerException;
-                throw e;
+                throw ex.InnerException;
             }
 
-
-           
         }
-        
-        
+
         #endregion Public Methods
 
 
