@@ -1,7 +1,8 @@
 ﻿using DFC.Personalisation.Common.Extensions;
 using NUnit.Framework;
+using FluentAssertions;
 
-namespace DFC.Personalisation.Common.UnitTests.Extenisons
+namespace DFC.Personalisation.Common.UnitTests.Extensions
 {
     internal enum TestEnums
     {
@@ -15,7 +16,7 @@ namespace DFC.Personalisation.Common.UnitTests.Extenisons
         {
             string incorrect = "sdfdfsfs";
             var result = incorrect.ToEnum(defaultValue: TestEnums.Undefined);
-            Assert.AreEqual(TestEnums.Undefined, result);
+            result.Should().BeEquivalentTo(TestEnums.Undefined);
         }
 
         [Test]
@@ -23,7 +24,7 @@ namespace DFC.Personalisation.Common.UnitTests.Extenisons
         {
             var blank = string.Empty;
             var result = blank.ToEnum(defaultValue: TestEnums.Undefined);
-            Assert.AreEqual(TestEnums.Undefined, result);
+            result.Should().BeEquivalentTo(TestEnums.Undefined);
         }
 
         [Test]
@@ -31,14 +32,14 @@ namespace DFC.Personalisation.Common.UnitTests.Extenisons
         {
             var validTest1 = "Test1";
             var result = validTest1.ToEnum(defaultValue: TestEnums.Undefined);
-            Assert.AreEqual(TestEnums.Test1, result);
+            result.Should().BeEquivalentTo(TestEnums.Test1);
         }
         [Test]
         public void If_Valid_CaseInsensitive_Value_Return_Correct_Value()
         {
             var validTest1 = "TeSt1";
             var result = validTest1.ToEnum(defaultValue: TestEnums.Undefined);
-            Assert.AreEqual(TestEnums.Test1, result);
+            result.Should().BeEquivalentTo(TestEnums.Test1);
         }
     }
 }
