@@ -9,7 +9,7 @@ namespace DFC.Personalisation.Common.UnitTests.Extensions
         Undefined = 0,
         Test1 = 1
     }
-    public class ToEnumTests
+    public class EnumExtensionTests
     {
         [Test]
         public void If_Invalid_Value_Return_Default()
@@ -40,6 +40,19 @@ namespace DFC.Personalisation.Common.UnitTests.Extensions
             var validTest1 = "TeSt1";
             var result = validTest1.ToEnum(defaultValue: TestEnums.Undefined);
             result.Should().Be(TestEnums.Test1);
+        }
+
+        [Test]
+        public void When_ToLower_Used_Return_Lowercase_Enum_As_String()
+        {
+            var result = TestEnums.Test1.ToLower();
+            result.Should().Be("test1");
+        }
+        [Test]
+        public void When_ToUpper_Used_Return_Lowercase_Enum_As_String()
+        {
+            var result = TestEnums.Test1.ToUpper();
+            result.Should().Be("TEST1");
         }
     }
 }
