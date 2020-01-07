@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DFC.Personalisation.Common.Extensions
 {
@@ -13,6 +11,14 @@ namespace DFC.Personalisation.Common.Extensions
                 return defaultValue;
             }
             return Enum.TryParse<T>(value, true, out T result) ? result : defaultValue;
+        }
+        public static string ToLower (this object obj)
+        {
+            return obj.ToString().ToLower();
+        }
+        public static string ToUpper (this object obj)
+        {
+            return obj.ToString().ToUpper();
         }
     }
 }
