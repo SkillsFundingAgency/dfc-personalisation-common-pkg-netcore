@@ -32,9 +32,8 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_MockServiceGet_Then_ShouldReturnObject(string url)
             {
-
                 // ACT
-                MockResult result = await _subjectUnderTest.Get<MockResult>(url);
+                MockResult result = await _subjectUnderTest.GetAsync<MockResult>(url);
 
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
@@ -58,7 +57,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             public async Task When_MockServiceGetWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
             {
                 // ACT
-                var result = await _subjectUnderTest.Get<MockResult>(url,"8ed8640b25004e26992beb9164d");
+                var result = await _subjectUnderTest.GetAsync<MockResult>(url,"8ed8640b25004e26992beb9164d");
 
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
@@ -83,7 +82,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             {
 
                 // ACT
-                var result = await _subjectUnderTest.Get(url);
+                var result = await _subjectUnderTest.GetAsync(url);
 
                 // ASSERT
                 result.Should().NotBeNull(); 
@@ -97,7 +96,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 var subjectUnderTest = new RestClient();
                 
                 // ACT
-                Exception ex = Assert.ThrowsAsync<HttpRequestException>(() =>  subjectUnderTest.Get<MockResult>(url));
+                Exception ex = Assert.ThrowsAsync<HttpRequestException>(() =>  subjectUnderTest.GetAsync<MockResult>(url));
                 
                 // ASSERT
                 StringAssert.Contains("404", ex.Message);
@@ -107,7 +106,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             public void When_MissingocpApimSubscriptionKey_Then_ShouldReturnException(string url)
             {
                 // ACT
-                Exception ex = Assert.ThrowsAsync<ArgumentNullException>(() =>  _subjectUnderTest.Get<MockResult>(url,""));
+                Exception ex = Assert.ThrowsAsync<ArgumentNullException>(() =>  _subjectUnderTest.GetAsync<MockResult>(url,""));
                 
                 // ASSERT
                 StringAssert.Contains("Ocp-Apim-Subscription-Key", ex.Message);
@@ -129,7 +128,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 var content = new FormUrlEncodedContent(values);
 
                 // ACT
-                var result = await _subjectUnderTest.Post<MockResult>(url,content);
+                var result = await _subjectUnderTest.PostAsync<MockResult>(url,content);
 
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
@@ -162,7 +161,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
 
                 var content = new FormUrlEncodedContent(values);
                 // ACT
-                var result = await _subjectUnderTest.Post<MockResult>(url,content,"8ed8640b25004e26992beb9164d");
+                var result = await _subjectUnderTest.PostAsync<MockResult>(url,content,"8ed8640b25004e26992beb9164d");
 
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
@@ -193,7 +192,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 };
 
                 // ACT
-                var result = await _subjectUnderTest.Post(url,values);
+                var result = await _subjectUnderTest.PostAsync(url,values);
 
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
@@ -224,7 +223,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 };
 
                 // ACT
-                var result = await _subjectUnderTest.PostFormUrlEncodedContent<MockResult>(url,testList);
+                var result = await _subjectUnderTest.PostFormUrlEncodedContentAsync<MockResult>(url,testList);
 
                 // ASSERT
                 result.Should().NotBeNull(); 
@@ -252,7 +251,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 using var content = new StringContent("{'Id':1,'Value':'1'}", System.Text.Encoding.UTF8, "application/json");
 
                 // ACT
-                var result = await _subjectUnderTest.Put<MockResult>(url,content);
+                var result = await _subjectUnderTest.PutAsync<MockResult>(url,content);
 
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
@@ -277,7 +276,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             public async Task When_MockServiceDelete_Then_ResponseOK(string url)
             {
                 // ACT
-                var result = await _subjectUnderTest.Delete<MockResult>(url);
+                var result = await _subjectUnderTest.DeleteAsync<MockResult>(url);
 
                 // ASSERT
                 result.Should().NotBeNull();
@@ -309,7 +308,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 };
 
                 // ACT
-                var result = await  _subjectUnderTest.Patch<MockResult>(url,testList);
+                var result = await  _subjectUnderTest.PatchAsync<MockResult>(url,testList);
 
                 // ASSERT
                 result.Should().NotBe(null);
@@ -337,7 +336,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 };
 
                 // ACT
-                var result = await  _subjectUnderTest.Patch<MockResult>(url,testList);
+                var result = await  _subjectUnderTest.PatchAsync<MockResult>(url,testList);
 
                 // ASSERT
                 result.Should().NotBe(null);
@@ -366,7 +365,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             {
                 
                 // ACT
-                await _subjectUnderTest.Get<MockResult>(url);
+                await _subjectUnderTest.GetAsync<MockResult>(url);
 
                 // ASSERT
                 _subjectUnderTest.LastResponse.Should().NotBe(null);
