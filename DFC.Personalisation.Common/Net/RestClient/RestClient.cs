@@ -14,18 +14,18 @@ namespace DFC.Personalisation.Common.Net.RestClient
     
     public interface IRestClient
     {
-        Task<TResponseObject> Get<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class;
-        Task<TResponseObject> Get<TResponseObject>(string apiPath) where TResponseObject : class;
-        Task<byte[]> Get(string apiPath);
-        Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
+        Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class;
+        Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
+        Task<byte[]> GetAsync(string apiPath);
+        Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
 
-        Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content, string ocpApimSubscriptionKey)
+        Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content, string ocpApimSubscriptionKey)
             where TResponseObject : class;
-        Task<TRequestResponseObject> Post<TRequestResponseObject>(string apiPath,TRequestResponseObject requestObject) where TRequestResponseObject : class; 
-        Task<TResponseObject> PostFormUrlEncodedContent<TResponseObject>(string apiPath,List<KeyValuePair<string, string>> formData) where TResponseObject : class;
-        Task<TResponseObject> Put<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
-        Task<TResponseObject> Patch<TResponseObject>(string apiPath,List<KeyValuePair<string, string>> requestBody) where TResponseObject : class;
-        Task<TResponseObject> Delete<TResponseObject>(string apiPath) where TResponseObject : class;
+        Task<TRequestResponseObject> PostAsync<TRequestResponseObject>(string apiPath,TRequestResponseObject requestObject) where TRequestResponseObject : class; 
+        Task<TResponseObject> PostFormUrlEncodedContentAsync<TResponseObject>(string apiPath,List<KeyValuePair<string, string>> formData) where TResponseObject : class;
+        Task<TResponseObject> PutAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
+        Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath,List<KeyValuePair<string, string>> requestBody) where TResponseObject : class;
+        Task<TResponseObject> DeleteAsync<TResponseObject>(string apiPath) where TResponseObject : class;
     }
     public class RestClient :HttpClient, IRestClient
     {
@@ -56,12 +56,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         {
             InitialiseDefaultRequestHeaders();
         }
-        public void InitialiseDefaultRequestHeaders()
-        {
-            DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-        }
-
+        
         #region Private Methods
         
         private static T JsonStringToObject<T>(string json) where T:class
@@ -80,7 +75,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         #endregion Private Methods
         
         #region Public Methods
-        public async Task<TResponseObject> Get<TResponseObject>(string apiPath) where TResponseObject : class
+        public async Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class
         {
             TResponseObject responseObject = default;
             try
@@ -102,15 +97,15 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public async Task<TResponseObject> Get<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class
+        public  async Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class
         {
             if (string.IsNullOrWhiteSpace(ocpApimSubscriptionKey))
                 throw new ArgumentNullException(nameof(ocpApimSubscriptionKey), "Please provide Ocp-Apim-Subscription-Key");
             DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
-            return await Get<TResponseObject>(apiPath);
+            return await GetAsync<TResponseObject>(apiPath);
         }
         
-        public async Task<byte[]> Get(string apiPath)
+        public new async Task<byte[]>GetAsync(string apiPath)
         {
             byte[] responseData = default;
             try
@@ -130,13 +125,14 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public async Task<TResponseObject>  Post<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class
+        public  async Task<TResponseObject>  PostAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class
         {
             TResponseObject responseObject = default;
             try
             {
                 LastResponse = null;
-                var response = await PostAsync(apiPath, content);
+                
+                var response = await base.PostAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
                 response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();
@@ -152,20 +148,20 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public async Task<TResponseObject> Post<TResponseObject>(string apiPath, HttpContent content,string ocpApimSubscriptionKey)
+        public async Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content,string ocpApimSubscriptionKey)
             where TResponseObject : class
         {
             DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
-            return await Post<TResponseObject>(apiPath,content);
+            return await PostAsync<TResponseObject>(apiPath,content);
         }
 
-        public async Task<TResponseObject> Post<TResponseObject>(string apiPath, TResponseObject requestObject) where TResponseObject : class
+        public async Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, TResponseObject requestObject) where TResponseObject : class
         {
             try
             {
                 var jsonString = ObjectToJsonString(requestObject);
                 using var content = new StringContent(jsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
-                return  await Post<TResponseObject>(apiPath, content);
+                return  await PostAsync<TResponseObject>(apiPath, content);
             }
             catch (AggregateException ex)
             {
@@ -173,12 +169,12 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public async Task<TResponseObject> PostFormUrlEncodedContent<TResponseObject>(string apiPath, List<KeyValuePair<string, string>> formData) where TResponseObject : class
+        public async Task<TResponseObject> PostFormUrlEncodedContentAsync<TResponseObject>(string apiPath, List<KeyValuePair<string, string>> formData) where TResponseObject : class
         {
             try
             {
                 using var content = new FormUrlEncodedContent(formData);
-                return await Post<TResponseObject>(apiPath, content);
+                return await PostAsync<TResponseObject>(apiPath, content);
             }
             catch (AggregateException ex)
             {
@@ -186,7 +182,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public async Task<TResponseObject> Put<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class
+        public async Task<TResponseObject> PutAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class
         {
             TResponseObject responseObject = default;
             try
@@ -209,7 +205,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public async Task<TResponseObject> Delete<TResponseObject>(string apiPath) where TResponseObject: class
+        public async Task<TResponseObject> DeleteAsync<TResponseObject>(string apiPath) where TResponseObject: class
         {
             try
             {
@@ -227,7 +223,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public async Task<TResponseObject> Patch<TResponseObject>( string apiPath, List<KeyValuePair<string, string>> requestBody) where TResponseObject : class
+        public async Task<TResponseObject> PatchAsync<TResponseObject>( string apiPath, List<KeyValuePair<string, string>> requestBody) where TResponseObject : class
         {
 
             TResponseObject responseObject = default;
@@ -256,6 +252,12 @@ namespace DFC.Personalisation.Common.Net.RestClient
 
         #endregion Public Methods
 
+        public void InitialiseDefaultRequestHeaders()
+        {
+            DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+        }
+       
 
     }
 }
