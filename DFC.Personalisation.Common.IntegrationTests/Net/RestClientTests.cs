@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using DFC.Personalisation.Common.Net.RestClient;
 using FluentAssertions;
@@ -30,7 +31,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             public async Task When_ServiceGet_Then_ShouldReturnRow(string url)
             {
                 // ACT
-                var result = await _subjectUnderTest.Get<ToDo>(url);
+                var result = await _subjectUnderTest.GetAsync<ToDo>(url);
 
                 // ASSERT
                 result.Should().NotBeNull();
@@ -44,7 +45,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             public async Task When_ServiceGetMany_Then_ShouldReturnMultipleRows(string url)
             {
                 // ACT
-                var result = await _subjectUnderTest.Get<IList<ToDo>>(url);
+                var result = await _subjectUnderTest.GetAsync<IList<ToDo>>(url);
 
                 // ASSERT
                 result.Should().NotBeNull()
@@ -58,7 +59,7 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
                 _subjectUnderTest.DefaultRequestHeaders.Add(_ocpApimSubscriptionKeyHeader, _apiKey);
              
                 // ACT
-                var result = await _subjectUnderTest.Get<SkillsList>(url);
+                var result = await _subjectUnderTest.GetAsync<SkillsList>(url);
                 
                 // ASSERT
                 result.Should().NotBeNull();
@@ -72,13 +73,26 @@ namespace DFC.Personalisation.Common.IntegrationTests.Net
             public async Task When_ServiceGetWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
             {
                 // ACT
-                var result = await _subjectUnderTest.Get<SkillsList>(url,_apiKey);
+                var result = await _subjectUnderTest.GetAsync<SkillsList>(url,_apiKey);
                 
                 // ASSERT
                 result.Should().NotBeNull();
                 
             }
 
+            [TestCase("https://dev.api.nationalcareersservice.org.uk/GetOccupationsByLabel/Execute/?matchAltLabels=false")]
+            public async Task When_ServicePostWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
+            {
+                //ARANGE
+                var postData = new StringContent("{ \"label\": \"writing\" }", Encoding.UTF8, "application/json");
+
+                // ACT
+                var result = await _subjectUnderTest.PostAsync<SkillsList>(url,postData,_apiKey);
+                
+                // ASSERT
+                result.Should().NotBeNull();
+                
+            }
             #endregion
     }
 
