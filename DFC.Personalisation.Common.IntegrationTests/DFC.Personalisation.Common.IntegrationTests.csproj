@@ -18,13 +18,4 @@
     <ProjectReference Include="..\DFC.Personalisation.Common\DFC.Personalisation.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="template-appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
