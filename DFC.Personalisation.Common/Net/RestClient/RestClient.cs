@@ -18,7 +18,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> GetAsync(string apiPath);
         Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
-        Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpRequestMessage defaultHeader) where TResponseObject : class;
+        Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpRequestMessage requestMessage) where TResponseObject : class;
         Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content, string ocpApimSubscriptionKey)
             where TResponseObject : class;
         Task<TRequestResponseObject> PostAsync<TRequestResponseObject>(string apiPath,TRequestResponseObject requestObject) where TRequestResponseObject : class; 
