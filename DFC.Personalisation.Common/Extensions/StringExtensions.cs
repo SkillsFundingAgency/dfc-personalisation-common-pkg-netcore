@@ -1,16 +1,16 @@
-﻿namespace DFC.Personalisation.Common.Extensions
+﻿using System;
+using System.Linq;
+
+namespace DFC.Personalisation.Common.Extensions
 {
     public static class StringExtensions
     {
-        public static string UppercaseFirst(this string src)
-        {
-            if (string.IsNullOrWhiteSpace(src))
+        public static string FirstCharToUpper(this string input) =>
+            input switch
             {
-                return string.Empty;
-            }
-            char[] c = src.ToCharArray();
-            c[0] = char.ToUpper(c[0]);
-            return new string(c);
-        }
+                null => throw new ArgumentNullException(nameof(input)),
+                "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
+                _ => input.First().ToString().ToUpper() + input.Substring(1)
+            };
     }
 }

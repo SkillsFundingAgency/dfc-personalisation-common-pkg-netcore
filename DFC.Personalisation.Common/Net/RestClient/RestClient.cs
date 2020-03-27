@@ -18,7 +18,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> GetAsync(string apiPath);
         Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
-
+        Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpRequestMessage requestMessage) where TResponseObject : class;
         Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content, string ocpApimSubscriptionKey)
             where TResponseObject : class;
         Task<TRequestResponseObject> PostAsync<TRequestResponseObject>(string apiPath,TRequestResponseObject requestObject) where TRequestResponseObject : class; 
@@ -153,6 +153,16 @@ namespace DFC.Personalisation.Common.Net.RestClient
         {
             DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
             return await PostAsync<TResponseObject>(apiPath,content);
+        }
+
+        public async Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpRequestMessage requestMessage)
+            where TResponseObject : class
+        {
+            foreach (var header in requestMessage.Headers)
+            {
+                DefaultRequestHeaders.Add(header.Key,header.Value);
+            }
+            return await PostAsync<TResponseObject>(apiPath,requestMessage.Content);
         }
 
         public async Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, TResponseObject requestObject) where TResponseObject : class
