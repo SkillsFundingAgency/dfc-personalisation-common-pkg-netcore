@@ -1,49 +1,18 @@
-﻿using NUnit.Framework;
-using DFC.Personalisation.Common.Extensions;
+﻿using DFC.Personalisation.Common.Extensions;
 using FluentAssertions;
+using NUnit.Framework;
 
 namespace DFC.Personalisation.Common.UnitTests.Extensions
 {
     public class StringExtensionTests
     {
         [Test]
-        public void When_Null_Then_ReturnEmptyString()
+        public void When_FirstCharToUpperCalled_Then_TheStringReturnedShouldHaveAnUpperCaseFirstChar()
         {
-            // Arrange.
-            string sourceString = null;
+            const string testString = "test";
 
-            // Act.
-            var result = sourceString.UppercaseFirst();
+            testString.FirstCharToUpper().Should().Be("Test");
 
-            // Assert.
-            result.Should().BeEmpty();
-
-        }
-
-        [Test]
-        public void When_Empty_Then_ReturnEmptyString()
-        {
-            // Arrange.
-            string sourceString = string.Empty;
-
-            // Act.
-            var result = sourceString.UppercaseFirst();
-
-            // Assert.
-            result.Should().BeEmpty();
-        }
-
-        [Test]
-        public void When_NonEmpty_Then_ReturnFirstCharacterCapitalised()
-        {
-            // Arrange.
-            string sourceString = "wibble";
-
-            // Act.
-            var result = sourceString.UppercaseFirst();
-
-            // Assert.
-            result.Should().Be("Wibble");
         }
     }
 }
