@@ -241,6 +241,24 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                     ItExpr.IsAny<CancellationToken>()
                 );
             }
+            
+            [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
+            public async Task When_ServicePostWithHtpRequestMessage_Then_ShouldReturnObject(string url)
+            {
+                var request = new HttpRequestMessage();
+                
+                request.Headers.Add("Ocp-Apim-Subscription-Key", "");
+                request.Headers.Add("version", "v1");
+                // ACT
+                var result = await _subjectUnderTest.PostAsync<MockResult>("https://dev.api.nationalcareersservice.org.uk/discover-skills-and-careers/assessment/short",request);
+                
+                // ASSERT
+                result.Should().NotBeNull();
+                
+            }
+
+            
+            
             #endregion
 
             #region ***** Test Put *****
