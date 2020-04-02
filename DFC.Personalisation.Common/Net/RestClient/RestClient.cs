@@ -14,6 +14,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
     
     public interface IRestClient
     {
+        RestClient.APIResponse LastResponse { get;}
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class;
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> GetAsync(string apiPath);
@@ -34,7 +35,8 @@ namespace DFC.Personalisation.Common.Net.RestClient
             public HttpStatusCode StatusCode { get; internal set; }
             public bool IsSuccess { get; internal set; }
             public string Content { get; internal set; }
-
+            
+            
             internal APIResponse(HttpResponseMessage responseMessage)
             {
                 StatusCode = responseMessage.StatusCode;
@@ -47,6 +49,8 @@ namespace DFC.Personalisation.Common.Net.RestClient
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         
         public APIResponse LastResponse { get; internal set; }
+       
+
         public RestClient(): base()
         {
             InitialiseDefaultRequestHeaders();
