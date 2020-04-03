@@ -92,20 +92,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 result.Should().NotBeNull(); 
                 
             }
-            
 
-            [TestCase("https://jsonplaceholder.typicode.com/todos/error")]
-            public void When_MissingocpApimSubscriptionKey_Then_ShouldReturnException(string url)
-            {
-                var request = new HttpRequestMessage();
-                request.Headers.Add("Ocp-Apim-Subscription-Key", "");
-                // ACT
-                Exception ex = Assert.ThrowsAsync<ArgumentNullException>(() =>  _subjectUnderTest.GetAsync<MockResult>(url, request));
-                
-                // ASSERT
-                StringAssert.Contains("Ocp-Apim-Subscription-Key", ex.Message);
-            }
-            
             #endregion
 
             #region ***** Test Post *****
