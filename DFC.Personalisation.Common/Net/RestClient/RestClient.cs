@@ -87,7 +87,6 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 LastResponse = null;
                 var response = await GetAsync(apiPath, HttpCompletionOption.ResponseContentRead);
                 LastResponse = new APIResponse(response);
-                response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrWhiteSpace(jsonString))
                 {
@@ -138,7 +137,6 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 
                 var response = await base.PostAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
-                response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();
                 if(!string.IsNullOrWhiteSpace(jsonString))
                 {
@@ -204,7 +202,6 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 LastResponse = null;
                 var response = await PutAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
-                response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrWhiteSpace(jsonString))
                 {
@@ -249,7 +246,6 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 var content = new StringContent(jsonRequest, Encoding.UTF8, MediaTypeJsonPatch);
                 var response = await PatchAsync(apiPath, content);
                 LastResponse = new APIResponse(response);
-                response.EnsureSuccessStatusCode();
                 var jsonString = response.Content.ReadAsStringAsync().Result;
                 if(!string.IsNullOrWhiteSpace(jsonString))
                 {
