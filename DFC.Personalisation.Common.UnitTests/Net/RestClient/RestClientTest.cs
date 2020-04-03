@@ -89,18 +89,6 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 
             }
             
-            [TestCase("https://jsonplaceholder.typicode.com/todos/error")]
-            public void When_IncorrectUrl_Then_ShouldReturn404(string url)
-            {
-                //ARRANGE
-                var subjectUnderTest = new RestClient();
-                
-                // ACT
-                Exception ex = Assert.ThrowsAsync<HttpRequestException>(() =>  subjectUnderTest.GetAsync<MockResult>(url));
-                
-                // ASSERT
-                StringAssert.Contains("404", ex.Message);
-            }
 
             [TestCase("https://jsonplaceholder.typicode.com/todos/error")]
             public void When_MissingocpApimSubscriptionKey_Then_ShouldReturnException(string url)
