@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DFC.Personalisation.Common.Net.RestClient;
 using FluentAssertions;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 
@@ -51,6 +53,24 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                     ),
                     ItExpr.IsAny<CancellationToken>()
                 );
+            }
+
+            [Test]
+            public async Task When_MyRealTestt()
+            {
+                var myClient = new RestClient();
+                var request = new HttpRequestMessage();
+                
+                request.Headers.Add("Ocp-Apim-Subscription-Key", "118e33dafb6f4cf09898b4bbc2892c63");
+                request.Headers.Add("version", "v1");
+                request.Content = new StringContent("{\"PartitionKey\":\"session8\",\"SessionId\":\"996w55zrexzkxk\",\"Salt\":\"ncs|13\",\"CreatedDate\":\"2020-04-03T12:54:09.0085045Z\"}", Encoding.UTF8, "application/json");
+                // ACT
+                var result = await myClient.PostAsync<AssessmentShortResponse>("https://dev.api.nationalcareersservice.org.uk/discover-skills-and-careers/assessment/skills",request);
+                
+                // ASSERT
+                result.Should().NotBeNull();
+                
+                
             }
 
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
@@ -361,7 +381,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 );
             }
             
-            
+           
             #endregion 
           
             #region ***** Test Response Class *****
@@ -411,5 +431,12 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             return handlerMock;
         }
 
+    }
+    public class AssessmentShortResponse
+    {
+        public string PartitionKey { get; set; }
+        public string SessionId { get; set; }
+        public string Salt { get; set; }
+        public System.DateTime CreatedDate { get; set; }
     }
 }

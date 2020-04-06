@@ -14,7 +14,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
     
     public interface IRestClient
     {
-        RestClient.APIResponse LastResponse { get;}
+        RestClient.APIResponse LastResponse { get; set;}
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class;
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> GetAsync(string apiPath);
@@ -32,10 +32,14 @@ namespace DFC.Personalisation.Common.Net.RestClient
     {
         public class APIResponse
         {
-            public HttpStatusCode StatusCode { get; internal set; }
-            public bool IsSuccess { get; internal set; }
-            public string Content { get; internal set; }
-            
+            public HttpStatusCode StatusCode { get;  set; }
+            public bool IsSuccess { get;  set; }
+            public string Content { get;  set; }
+
+            public APIResponse()
+            {
+                
+            }
             
             internal APIResponse(HttpResponseMessage responseMessage)
             {
@@ -48,7 +52,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         private const string MediaTypeJsonPatch = "application/json-patch+json";
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         
-        public APIResponse LastResponse { get; internal set; }
+        public virtual APIResponse LastResponse { get; set; }
        
 
         public RestClient(): base()
