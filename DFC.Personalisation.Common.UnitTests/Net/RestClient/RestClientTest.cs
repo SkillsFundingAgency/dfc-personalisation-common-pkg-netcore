@@ -896,7 +896,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
 
                     StatusCode = HttpStatusCode.OK,
 
-                    Content = new StringContent("{'Id,\uD800,::{/':1,'Value':'1'}")
+                    Content = new StringContent("{'Id:':1,'Value':'1'}")
 
                 })
 
