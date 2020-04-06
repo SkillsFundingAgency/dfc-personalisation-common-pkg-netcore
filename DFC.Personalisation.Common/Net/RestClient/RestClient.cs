@@ -14,8 +14,8 @@ namespace DFC.Personalisation.Common.Net.RestClient
     
     public interface IRestClient
     {
-        RestClient.APIResponse LastResponse { get; set;}
-        Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class;
+        RestClient.APIResponse LastResponse { get;}
+        Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, HttpRequestMessage request) where TResponseObject : class;
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> GetAsync(string apiPath);
         Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
@@ -104,11 +104,13 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-        public  async Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, string ocpApimSubscriptionKey) where TResponseObject : class
+        public async Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, HttpRequestMessage request) where TResponseObject : class
         {
-            if (string.IsNullOrWhiteSpace(ocpApimSubscriptionKey))
-                throw new ArgumentNullException(nameof(ocpApimSubscriptionKey), "Please provide Ocp-Apim-Subscription-Key");
-            DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
+            foreach (var (key, value) in request.Headers)
+            {
+                DefaultRequestHeaders.Add(key, value);
+            }
+
             return await GetAsync<TResponseObject>(apiPath);
         }
         
