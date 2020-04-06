@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using DFC.Personalisation.Common.Net.RestClient;
 using FluentAssertions;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 
@@ -57,10 +57,8 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
             public async Task When_MockServiceGetWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
             {
-                var request = new HttpRequestMessage();
-                request.Headers.Add("Ocp-Apim-Subscription-Key", "8ed8640b25004e26992beb9164d");
-
                 // ACT
+                HttpRequestMessage request = new HttpRequestMessage();
                 var result = await _subjectUnderTest.GetAsync<MockResult>(url,request);
 
                 // ASSERT
@@ -354,7 +352,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 );
             }
             
-            
+           
             #endregion 
           
             #region ***** Test Response Class *****
@@ -404,5 +402,12 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             return handlerMock;
         }
 
+    }
+    public class AssessmentShortResponse
+    {
+        public string PartitionKey { get; set; }
+        public string SessionId { get; set; }
+        public string Salt { get; set; }
+        public System.DateTime CreatedDate { get; set; }
     }
 }
