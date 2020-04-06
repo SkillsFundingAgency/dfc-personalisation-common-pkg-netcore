@@ -180,6 +180,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 var jsonString = ObjectToJsonString(requestObject);
                 using var content = new StringContent(jsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
                 return  await PostAsync<TResponseObject>(apiPath, content);
+
             }
             catch (AggregateException ex)
             {
