@@ -55,7 +55,10 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 _handlerMock= GetMockMessageHandler();
 
                 _subjectUnderTest = new RestClient(_handlerMock.Object);
-
+                var apiResponse = new RestClient.APIResponse();
+                apiResponse.StatusCode = HttpStatusCode.OK;
+                apiResponse.Content = null;
+                apiResponse.IsSuccess = true;
             }
 
             
@@ -166,7 +169,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
 
             {
 
-
+                
 
                 // ACT
 
@@ -389,7 +392,6 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             {
 
                 //ARRANGE
-
                 var testList = new List<KeyValuePair<string, string>>
 
                 {
