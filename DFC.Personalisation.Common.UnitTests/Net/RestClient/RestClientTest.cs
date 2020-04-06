@@ -58,6 +58,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             public async Task When_MockServiceGetWithocpApimSubscriptionKey_Then_ShouldReturnObject(string url)
             {
                 // ACT
+                HttpRequestMessage request = new HttpRequestMessage();
                 var result = await _subjectUnderTest.GetAsync<MockResult>(url,request);
 
                 // ASSERT

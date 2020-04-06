@@ -14,7 +14,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
     
     public interface IRestClient
     {
-        RestClient.APIResponse LastResponse { get;}
+        RestClient.APIResponse LastResponse { get; set; }
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, HttpRequestMessage request) where TResponseObject : class;
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> GetAsync(string apiPath);
