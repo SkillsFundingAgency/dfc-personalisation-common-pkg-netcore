@@ -14,7 +14,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
     
     public interface IRestClient
     {
-        RestClient.APIResponse LastResponse { get; set; }
+        RestClient.APIResponse LastResponse { get;}
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, HttpRequestMessage request) where TResponseObject : class;
         Task<TResponseObject> GetAsync<TResponseObject>(string apiPath) where TResponseObject : class;
         Task<byte[]> GetAsync(string apiPath);
@@ -32,14 +32,10 @@ namespace DFC.Personalisation.Common.Net.RestClient
     {
         public class APIResponse
         {
-            public HttpStatusCode StatusCode { get;  set; }
-            public bool IsSuccess { get;  set; }
-            public string Content { get;  set; }
-
-            public APIResponse()
-            {
-                
-            }
+            public HttpStatusCode StatusCode { get; internal set; }
+            public bool IsSuccess { get; internal set; }
+            public string Content { get; internal set; }
+            
             
             internal APIResponse(HttpResponseMessage responseMessage)
             {
@@ -52,7 +48,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         private const string MediaTypeJsonPatch = "application/json-patch+json";
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         
-        public  APIResponse LastResponse { get; set; }
+        public APIResponse LastResponse { get; internal set; }
        
 
         public RestClient(): base()
@@ -180,7 +176,6 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 var jsonString = ObjectToJsonString(requestObject);
                 using var content = new StringContent(jsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
                 return  await PostAsync<TResponseObject>(apiPath, content);
-
             }
             catch (AggregateException ex)
             {
