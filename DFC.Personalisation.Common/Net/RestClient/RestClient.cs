@@ -52,7 +52,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         private const string MediaTypeJsonPatch = "application/json-patch+json";
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         
-        public virtual APIResponse LastResponse { get; set; }
+        public  APIResponse LastResponse { get; set; }
        
 
         public RestClient(): base()
