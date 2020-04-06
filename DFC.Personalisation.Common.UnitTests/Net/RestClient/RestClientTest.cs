@@ -140,7 +140,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
 
                 var content = new FormUrlEncodedContent(values);
                 // ACT
-                var result = await _subjectUnderTest.PostAsync<MockResult>(url,content,"8ed8640b25004e26992beb9164d");
+                var result = await _subjectUnderTest.PostAsync<MockResult>(url,content,"somekey");
 
                 // ASSERT
                 result.Should().NotBeNull(); // this is fluent assertions here...
@@ -225,7 +225,11 @@ namespace DFC.Personalisation.Common.UnitTests.Net
             public async Task When_ServicePostWithHtpRequestMessage_Then_ShouldReturnObject(string url)
             {
                 var request = new HttpRequestMessage();
-                
+                var apiResponse = new RestClient.APIResponse();
+                apiResponse.StatusCode = HttpStatusCode.Created;
+                apiResponse.Content = null;
+                apiResponse.StatusCode = HttpStatusCode.Created;
+
                 request.Headers.Add("Ocp-Apim-Subscription-Key", "");
                 request.Headers.Add("version", "v1");
                 // ACT
