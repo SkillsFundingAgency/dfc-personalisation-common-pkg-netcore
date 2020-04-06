@@ -285,7 +285,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
 
                 // ACT
 
-                var result = await _subjectUnderTest.PostAsync<MockResult>(url,content,"8ed8640b25004e26992beb9164d");
+                var result = await _subjectUnderTest.PostAsync<MockResult>(url,content,"");
 
 
 
@@ -482,6 +482,64 @@ namespace DFC.Personalisation.Common.UnitTests.Net
 
             #endregion
 
+
+            #region ***** Test Exception *****
+
+            [TestCase("https://jsonplaceholder.typicode.com/todos/1")]
+
+            public async Task When_MockServicePutHttpContentWithError_Then_ShouldThrowException(string url)
+
+            {
+
+                var _handlerMockError= GetMockMessageHandlerError();
+
+                var subjectUnderTestError = new RestClient(_handlerMockError.Object);
+                
+                //ARRANGE
+
+                using var content = new StringContent("{'Id':1'Value//{':'1'}", System.Text.Encoding.UTF8, "application/json");
+
+
+
+                // ACT
+
+                var result = await subjectUnderTestError.PutAsync<MockResult>(url,content);
+
+
+
+                // ASSERT
+
+                result.Should().NotBeNull(); // this is fluent assertions here...
+
+
+
+                // also check the 'http' call was like we expected it
+
+                var expectedUri = new Uri(url);
+
+
+
+                _handlerMock.Protected().Verify(
+
+                    "SendAsync",
+
+                    Times.Exactly(1), // we expected a single external request
+
+                    ItExpr.Is<HttpRequestMessage>(req =>
+
+                            req.Method == HttpMethod.Put // we expected a GET request
+
+                            && req.RequestUri == expectedUri // to this uri
+
+                    ),
+
+                    ItExpr.IsAny<CancellationToken>()
+
+                );
+
+            }
+
+            #endregion
 
 
             #region ***** Test Put *****
@@ -806,7 +864,47 @@ namespace DFC.Personalisation.Common.UnitTests.Net
 
         }
 
+        public static Mock<HttpMessageHandler> GetMockMessageHandlerError()
 
+        {
+
+            var handlerMock =  new Mock<HttpMessageHandler>(MockBehavior.Loose);
+
+            handlerMock
+
+                .Protected()
+
+                // Setup the PROTECTED method to mock
+
+                .Setup<Task<HttpResponseMessage>>(
+
+                    "SendAsync",
+
+                    ItExpr.IsAny<HttpRequestMessage>(),
+
+                    ItExpr.IsAny<CancellationToken>()
+
+                )
+
+
+
+                // prepare the expected response of the mocked http call
+
+                .ReturnsAsync(new HttpResponseMessage
+
+                {
+
+                    StatusCode = HttpStatusCode.OK,
+
+                    Content = new StringContent("{'Id,\uD800,::{/':1,'Value':'1'}")
+
+                })
+
+                .Verifiable();
+
+            return handlerMock;
+
+        }
 
     }
 
