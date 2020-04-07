@@ -32,12 +32,13 @@ namespace DFC.Personalisation.Common.Net.RestClient
     {
         public class APIResponse
         {
-            public HttpStatusCode StatusCode { get; internal set; }
-            public bool IsSuccess { get; internal set; }
-            public string Content { get; internal set; }
+            public HttpStatusCode StatusCode { get;  set; }
+            public bool IsSuccess { get; set; }
+            public string Content { get; set; }
+
+          
             
-            
-            internal APIResponse(HttpResponseMessage responseMessage)
+            public APIResponse(HttpResponseMessage responseMessage)
             {
                 StatusCode = responseMessage.StatusCode;
                 IsSuccess = responseMessage.IsSuccessStatusCode;
