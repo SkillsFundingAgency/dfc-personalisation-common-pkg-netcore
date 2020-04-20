@@ -25,7 +25,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         Task<TRequestResponseObject> PostAsync<TRequestResponseObject>(string apiPath,TRequestResponseObject requestObject) where TRequestResponseObject : class; 
         Task<TResponseObject> PostFormUrlEncodedContentAsync<TResponseObject>(string apiPath,List<KeyValuePair<string, string>> formData) where TResponseObject : class;
         Task<TResponseObject> PutAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
-        Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, HttpContent requestBody) where TResponseObject : class;
+        Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, HttpContent content) where TResponseObject : class;
         Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, HttpRequestMessage requestMessage) where TResponseObject : class;
         Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, List<KeyValuePair<string, string>> keyValueList) where TResponseObject : class;
         Task<TResponseObject> DeleteAsync<TResponseObject>(string apiPath) where TResponseObject : class;
