@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DFC.Personalisation.Common.Net.RestClient;
 using FluentAssertions;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 
@@ -307,7 +310,7 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                 };
 
                 // ACT
-                var result = await  _subjectUnderTest.PatchAsync<MockResult>(url,testList);
+                var result = await  _subjectUnderTest.PatchAsync<MockResult>(url, testList);
 
                 // ASSERT
                 result.Should().NotBe(null);
@@ -353,10 +356,65 @@ namespace DFC.Personalisation.Common.UnitTests.Net
                     ItExpr.IsAny<CancellationToken>()
                 );
             }
-            
-            
-            #endregion 
-          
+            [TestCase("https://jsonplaceholder.typicode.com/posts/1")]
+            public async Task When_ServicePatch_Content_Then_ResponseOK(string url)
+            {
+                //ARRANGE
+                var testList = new List<KeyValuePair<string, string>>{
+                    new KeyValuePair<string, string>("title", "foo")
+                };
+                var content = new HttpRequestMessage();
+                content.Headers.Add("Header", "content");
+                content.Content = new StringContent(JsonConvert.SerializeObject(testList), Encoding.UTF8, MediaTypeNames.Application.Json);
+                // ACT
+                var result = await _subjectUnderTest.PatchAsync<MockResult>(url, content);
+
+                // ASSERT
+                result.Should().NotBe(null);
+
+                // also check the 'http' call was like we expected it
+                var expectedUri = new Uri(url);
+
+                _handlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1), // we expected a single external request
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                            req.Method == HttpMethod.Patch // we expected a GET request
+                            && req.RequestUri == expectedUri // to this uri
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+            }
+            [TestCase("https://jsonplaceholder.typicode.com/posts/1")]
+            public async Task When_ServicePatch_Key_Then_ResponseOK(string url)
+            {
+                //ARRANGE
+                var testList = new List<KeyValuePair<string, string>>{
+                    new KeyValuePair<string, string>("title", "foo")
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(testList), Encoding.UTF8, MediaTypeNames.Application.Json);
+                content.Headers.Add("Header", "content");
+                // ACT
+                var result = await _subjectUnderTest.PatchAsync<MockResult>(url, content, "key");
+
+                // ASSERT
+                result.Should().NotBe(null);
+
+                // also check the 'http' call was like we expected it
+                var expectedUri = new Uri(url);
+
+                _handlerMock.Protected().Verify(
+                    "SendAsync",
+                    Times.Exactly(1), // we expected a single external request
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                            req.Method == HttpMethod.Patch // we expected a GET request
+                            && req.RequestUri == expectedUri // to this uri
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
+            }
+            #endregion
+
             #region ***** Test Response Class *****
 
             [TestCase("https://jsonplaceholder.typicode.com/todos/error")]
