@@ -106,9 +106,9 @@ namespace DFC.Personalisation.Common.Net.RestClient
 
         public async Task<TResponseObject> GetAsync<TResponseObject>(string apiPath, HttpRequestMessage request) where TResponseObject : class
         {
-            foreach (var (key, value) in request.Headers)
+            foreach (var header in request.Headers)
             {
-                DefaultRequestHeaders.Add(key, value);
+                AddHeadersToClient(header);
             }
 
             return await GetAsync<TResponseObject>(apiPath);
@@ -159,7 +159,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         public async Task<TResponseObject> PostAsync<TResponseObject>(string apiPath, HttpContent content, string ocpApimSubscriptionKey)
             where TResponseObject : class
         {
-            DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
+            AddHeadersToClient(new KeyValuePair<string, IEnumerable<string>>(OcpApimSubscriptionKeyHeader, new List<string> { ocpApimSubscriptionKey }));
             return await PostAsync<TResponseObject>(apiPath,content);
         }
 
@@ -168,7 +168,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         {
             foreach (var header in requestMessage.Headers)
             {
-                DefaultRequestHeaders.Add(header.Key,header.Value);
+                AddHeadersToClient(header);
             }
             return await PostAsync<TResponseObject>(apiPath,requestMessage.Content);
         }
@@ -298,7 +298,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         private void AddHeadersToClient(KeyValuePair<string,IEnumerable<string>> header)
         {
             if (DefaultRequestHeaders.Any(x
-                => x.Key == header.Key))
+                => string.Compare(x.Key, header.Key, StringComparison.InvariantCultureIgnoreCase) == 0))
             {
                 DefaultRequestHeaders.Remove(header.Key);
             }
