@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -250,7 +251,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         public async Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, HttpContent content, string ocpApimSubscriptionKey)
             where TResponseObject : class
         {
-            DefaultRequestHeaders.Add(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
+            AddHeadersToClient(new KeyValuePair<string, IEnumerable<string>>(OcpApimSubscriptionKeyHeader, new List<string>{ocpApimSubscriptionKey}));
             return await PatchAsync<TResponseObject>(apiPath, content);
         }
 
@@ -259,7 +260,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
         {
             foreach (var header in requestMessage.Headers)
             {
-                DefaultRequestHeaders.Add(header.Key, header.Value);
+                AddHeadersToClient(header);
             }
             return await PatchAsync<TResponseObject>(apiPath, requestMessage.Content);
         }
@@ -293,7 +294,17 @@ namespace DFC.Personalisation.Common.Net.RestClient
             DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         }
-       
+
+        private void AddHeadersToClient(KeyValuePair<string,IEnumerable<string>> header)
+        {
+            if (DefaultRequestHeaders.Any(x
+                => x.Key == header.Key))
+            {
+                DefaultRequestHeaders.Remove(header.Key);
+            }
+            
+            DefaultRequestHeaders.Add(header.Key,header.Value);
+        }
 
     }
 }
