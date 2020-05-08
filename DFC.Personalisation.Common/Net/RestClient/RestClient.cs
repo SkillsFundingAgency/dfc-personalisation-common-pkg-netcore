@@ -300,7 +300,7 @@ namespace DFC.Personalisation.Common.Net.RestClient
             if (DefaultRequestHeaders.Any(x
                 => x.Key == header.Key))
             {
-                DefaultRequestHeaders.Remove(header.Key);;
+                DefaultRequestHeaders.Remove(header.Key);
             }
             
             DefaultRequestHeaders.Add(header.Key,header.Value);
