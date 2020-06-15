@@ -18,13 +18,10 @@
             return Enum.TryParse<T>(value, true, out T result) ? result : defaultValue;
         }
 
-        public static string GetDisplayName(this Enum enumValue)
-        {
-            return enumValue.GetType()
+        public static string GetDisplayName(this Enum enumValue) => enumValue.GetType()
                 .GetMember(enumValue.ToString())
                 .First()
                 .GetCustomAttribute<DisplayAttribute>()
                 .GetName();
-        }
     }
 }
