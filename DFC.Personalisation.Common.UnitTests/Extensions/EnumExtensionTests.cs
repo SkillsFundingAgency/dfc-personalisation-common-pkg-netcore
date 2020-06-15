@@ -1,12 +1,16 @@
-﻿using DFC.Personalisation.Common.Extensions;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using DFC.Personalisation.Common.Extensions;
 using NUnit.Framework;
 using FluentAssertions;
+using System.ComponentModel.DataAnnotations;
 
 namespace DFC.Personalisation.Common.UnitTests.Extensions
 {
     internal enum TestEnums
     {
         Undefined = 0,
+        [Display(Name = "Test One")]
         Test1 = 1
     }
     public class EnumExtensionTests
@@ -43,16 +47,10 @@ namespace DFC.Personalisation.Common.UnitTests.Extensions
         }
 
         [Test]
-        public void When_ToLower_Used_Return_Lowercase_Enum_As_String()
+        public void If_GetDisplayName_Return_DisplayName()
         {
-            var result = TestEnums.Test1.ToLower();
-            result.Should().Be("test1");
-        }
-        [Test]
-        public void When_ToUpper_Used_Return_Lowercase_Enum_As_String()
-        {
-            var result = TestEnums.Test1.ToUpper();
-            result.Should().Be("TEST1");
+            var enumDisplay = TestEnums.Test1.GetDisplayName();
+            enumDisplay.Should().Be("Test One");
         }
     }
 }
