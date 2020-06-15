@@ -1,4 +1,7 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
 
 namespace DFC.Personalisation.Common.Extensions
 {
@@ -12,13 +15,14 @@ namespace DFC.Personalisation.Common.Extensions
             }
             return Enum.TryParse<T>(value, true, out T result) ? result : defaultValue;
         }
-        public static string ToLower (this object obj)
+        public static string GetDisplayName(this Enum enumValue)
         {
-            return obj.ToString().ToLower();
+            return enumValue.GetType()
+                .GetMember(enumValue.ToString())
+                .First()
+                .GetCustomAttribute<DisplayAttribute>()
+                .GetName();
         }
-        public static string ToUpper (this object obj)
-        {
-            return obj.ToString().ToUpper();
-        }
+       
     }
 }

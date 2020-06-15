@@ -14,5 +14,18 @@ namespace DFC.Personalisation.Common.UnitTests.Extensions
             testString.FirstCharToUpper().Should().Be("Test");
 
         }
+
+        [Test]
+        public void When_ToLower_Used_Return_Lowercase_Enum_As_String()
+        {
+            var result = TestEnums.Test1.ToLower();
+            result.Should().Be("test1");
+        }
+        [Test]
+        public void When_ToUpper_Used_Return_Lowercase_Enum_As_String()
+        {
+            var result = TestEnums.Test1.ToUpper();
+            result.Should().Be("TEST1");
+        }
     }
 }
