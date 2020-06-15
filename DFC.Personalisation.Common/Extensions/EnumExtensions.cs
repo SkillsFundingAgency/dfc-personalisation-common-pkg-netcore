@@ -1,20 +1,23 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-
-namespace DFC.Personalisation.Common.Extensions
+﻿namespace DFC.Personalisation.Common.Extensions
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Reflection;
+    
     public static class EnumExtensions
     {
-        public static T ToEnum<T>(this string value, T defaultValue) where T : struct
+        public static T ToEnum<T>(this string value, T defaultValue) 
+            where T : struct
         {
             if (string.IsNullOrEmpty(value))
             {
                 return defaultValue;
             }
+
             return Enum.TryParse<T>(value, true, out T result) ? result : defaultValue;
         }
+
         public static string GetDisplayName(this Enum enumValue)
         {
             return enumValue.GetType()
@@ -23,6 +26,5 @@ namespace DFC.Personalisation.Common.Extensions
                 .GetCustomAttribute<DisplayAttribute>()
                 .GetName();
         }
-       
     }
 }
