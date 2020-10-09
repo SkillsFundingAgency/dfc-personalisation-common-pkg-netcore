@@ -30,6 +30,9 @@ namespace DFC.Personalisation.Common.Net.RestClient
         Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, HttpRequestMessage requestMessage) where TResponseObject : class;
         Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, List<KeyValuePair<string, string>> keyValueList) where TResponseObject : class;
         Task<TResponseObject> DeleteAsync<TResponseObject>(string apiPath) where TResponseObject : class;
+        Task<TResponseObject> DeleteAsync<TResponseObject>(string apiPath, HttpRequestMessage requestMessage) where TResponseObject : class;
+        Task DeleteAsync(string apiPath, HttpRequestMessage requestMessage);
+
     }
     public class RestClient : HttpClient, IRestClient
     {
@@ -222,8 +225,6 @@ namespace DFC.Personalisation.Common.Net.RestClient
             }
         }
 
-
-
         public async Task<TResponseObject> DeleteAsync<TResponseObject>(string apiPath) where TResponseObject: class
         {
             try
@@ -241,6 +242,37 @@ namespace DFC.Personalisation.Common.Net.RestClient
                 throw ex.InnerException;
             }
         }
+
+        public async Task<TResponseObject> DeleteAsync<TResponseObject>(string apiPath, HttpRequestMessage requestMessage) where TResponseObject : class
+        {
+            foreach (var header in requestMessage.Headers)
+            {
+                AddHeadersToClient(header);
+            }
+
+            return await DeleteAsync<TResponseObject>(apiPath);
+        }
+
+        public async Task DeleteAsync(string apiPath, HttpRequestMessage requestMessage)
+        {
+            foreach (var header in requestMessage.Headers)
+            {
+                AddHeadersToClient(header);
+            }
+
+            try
+            {
+                LastResponse = null;
+                var response = await DeleteAsync(apiPath);
+                LastResponse = new APIResponse(response);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.InnerException;
+            }
+        }
+
         public async Task<TResponseObject> PatchAsync<TResponseObject>(string apiPath, List<KeyValuePair<string, string>> keyValueList) where TResponseObject : class
         {
             var jsonRequest = JsonConvert.SerializeObject(keyValueList);
